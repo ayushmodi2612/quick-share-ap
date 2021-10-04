@@ -1,12 +1,12 @@
 const nodemailer = require("nodemailer");
 module.exports = async ({ from, to, subject, text, html}) => {
         let transporter = nodemailer.createTransport({
-            host: smtp-relay.sendinblue.com,
-            port: 587,
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
             secure: false, // true for 465, false for other ports
             auth: {
-                user: "19dce070@charusat.edu.in", // generated ethereal user
-                pass: OHFEBPqLh3RNm7UI, // generated ethereal password
+                user: process.env.MAIL_USER, // generated ethereal user
+                pass: process.env.MAIL_PASSWORD, // generated ethereal password
             },
         });
 

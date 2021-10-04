@@ -16,9 +16,9 @@ let upload = multer({ storage, limits:{ fileSize: 1000000 * 100 }, }).single('my
 
 router.post('/', (req, res) => {
     upload(req, res, async (err) => {
-      if(!req.file){
-        return res.json({error : 'All fields are required'});
-      }
+      // if(!req.file){
+      //   return res.json({error : 'All fields are required'});
+      // }
       if (err) {
         return res.status(500).send({ error: err.message });
       }
@@ -29,7 +29,7 @@ router.post('/', (req, res) => {
             size: req.file.size
         });
         const response = await file.save();
-        return res.json({ file:`http://localhost:3000/files/${response.uuid}` });
+        return res.json({ file:`${process.env.APP_BASE_URL}/files/${response.uuid}` });
       });
 });
 
@@ -57,17 +57,16 @@ router.post('/send', async (req, res) => {
       text: `${emailFrom} shared a file with you.`,
       html: require('../services/emailTemplate')({
                 emailFrom, 
-                downloadLink: `http://localhost:3000/files/${file.uuid}` ,
+                downloadLink: `${process.env.APP_BASE_URL}/files/${file.uuid}` ,
                 size: parseInt(file.size/1000) + ' KB',
                 expires: '24 hours'
             })
     })
-    return res.send({success: true});
-    // .then(() => {
-    //   return res.json({success: true});
-    // }).catch(err => {
-    //   return res.status(500).json({error: 'Error in email sending.'});
-    // });
+    .then(() => {
+      return res.json({success: true});
+    }).catch(err => {
+      return res.status(500).json({error: 'Error in email sending.'});
+    });
 }  
 catch(err) {
   return res.status(500).send({ error: 'Something went wrong.'});
