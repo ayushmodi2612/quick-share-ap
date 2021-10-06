@@ -19,5 +19,3 @@ module.exports = async ({ from, to, subject, text, html}) => {
         html: html, // html body
     });
 }
-
-module.exports = sendMail;

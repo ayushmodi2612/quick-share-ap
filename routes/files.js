@@ -16,9 +16,6 @@ let upload = multer({ storage, limits:{ fileSize: 1000000 * 100 }, }).single('my
 
 router.post('/', (req, res) => {
     upload(req, res, async (err) => {
-      // if(!req.file){
-      //   return res.json({error : 'All fields are required'});
-      // }
       if (err) {
         return res.status(500).send({ error: err.message });
       }
@@ -29,7 +26,7 @@ router.post('/', (req, res) => {
             size: req.file.size
         });
         const response = await file.save();
-        return res.json({ file:`${process.env.APP_BASE_URL}/files/${response.uuid}` });
+        res.json({ file: `${process.env.APP_BASE_URL}/files/${response.uuid}` });
       });
 });
 
@@ -39,12 +36,11 @@ router.post('/send', async (req, res) => {
       return res.status(422).send({ error: 'All fields are required except expiry.'});
   }
   // Get data from db 
-  try {
+  // try {
     const file = await File.findOne({ uuid: uuid });
     if(file.sender) {
       return res.status(422).send({ error: 'Email already sent once.'});
     }
-
     file.sender = emailFrom;
     file.receiver = emailTo;
     const response = await file.save();
@@ -53,7 +49,7 @@ router.post('/send', async (req, res) => {
     sendMail({
       from: emailFrom,
       to: emailTo,
-      subject: 'QuickShare file sharing',
+      subject: 'quickShare file sharing',
       text: `${emailFrom} shared a file with you.`,
       html: require('../services/emailTemplate')({
                 emailFrom, 
@@ -62,15 +58,15 @@ router.post('/send', async (req, res) => {
                 expires: '24 hours'
             })
     })
-    .then(() => {
-      return res.json({success: true});
-    }).catch(err => {
-      return res.status(500).json({error: 'Error in email sending.'});
-    });
-}  
-catch(err) {
-  return res.status(500).send({ error: 'Something went wrong.'});
-}
+    // .then(() => {
+      return res.send({success: true});
+    // })
+    // .catch(err => {
+    //   return res.status(500).json({error: 'Error in email sending.'});
+    // });
+// } catch(err) {
+//   return res.status(500).send({ error: 'Something went wrong.'});
+// }
 
 });
 
