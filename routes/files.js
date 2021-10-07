@@ -2,7 +2,7 @@ const router = require('express').Router();
 const multer = require('multer');
 const path = require('path');
 const File = require('../models/file');
-const { v4: uuid4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 
 let storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'uploads/') ,
@@ -21,7 +21,7 @@ router.post('/', (req, res) => {
       }
         const file = new File({
             filename: req.file.filename,
-            uuid: uuid4(),
+            uuid: uuidv4(),
             path: req.file.path,
             size: req.file.size
         });
@@ -53,17 +53,18 @@ router.post('/send', async (req, res) => {
       text: `${emailFrom} shared a file with you.`,
       html: require('../services/emailTemplate')({
                 emailFrom, 
-                downloadLink: `${process.env.APP_BASE_URL}/files/${file.uuid}` ,
+                downloadLink: `${process.env.APP_BASE_URL}/files/${file.uuid}?source=email` ,
                 size: parseInt(file.size/1000) + ' KB',
                 expires: '24 hours'
             })
+            
     })
-    // .then(() => {
-      return res.send({success: true});
-    // })
-    // .catch(err => {
-    //   return res.status(500).json({error: 'Error in email sending.'});
-    // });
+    return res.send({success: true});
+//     .then(() => {
+//       return res.json({success: true});
+//     }).catch(err => {
+//       return res.status(500).json({error: 'Error in email sending.'});
+//     });
 // } catch(err) {
 //   return res.status(500).send({ error: 'Something went wrong.'});
 // }
