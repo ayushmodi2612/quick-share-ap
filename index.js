@@ -173,3 +173,6 @@ const showToast = (msg) => {
     toast.classList.remove("show");
   }, 2000);
 };
+
+
+module.exports = server1;

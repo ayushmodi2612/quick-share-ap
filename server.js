@@ -1,3 +1,4 @@
+const share = require("./index");
 require('dotenv').config();
 const express = require('express');
 const app = express();
